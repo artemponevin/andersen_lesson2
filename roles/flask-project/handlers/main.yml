@@ -1,0 +1,7 @@
+---
+# handlers file for flask-project
+
+- name: start app
+  systemd:
+    state: started
+    name: "{{ flask_app_name }}"

@@ -1,0 +1,9 @@
+[Unit]
+Description=My App  Server
+After=network.target
+[Service]
+Type=simple
+ExecStart=/home/{{ flaskapp_app_user }}/venv/bin/python3 {{ flaskapp_app_directory }}/hello_world_flask.py
+Restart=always
+[Install]
+WantedBy=multi-user.target

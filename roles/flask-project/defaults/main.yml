@@ -1,0 +1,14 @@
+---
+# defaults file for flask-project
+
+flaskapp_app_user: neo
+flask_app_name: andersen_app
+flaskapp_app_directory: /home/{{ flaskapp_app_user }}/{{ flask_app_name }}
+flaskapp_app_repository: https://github.com/artemponevin/flask_app.git
+flaskapp_app_packages:
+  - git
+  - python3-pip
+  - python3-venv
+  - python-pip
+  - python-virtualenv
+  - mc

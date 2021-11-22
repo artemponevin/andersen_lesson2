@@ -1,0 +1,75 @@
+---
+# tasks file for flask-project
+
+- name: Create flask user
+  user: name={{ flaskapp_app_user }}
+
+
+- name: Create app directory
+  file: 
+    dest: "{{ flaskapp_app_directory }}"
+    state: directory
+    owner: "{{ flaskapp_app_user }}"
+    group: "{{ flaskapp_app_user }}"
+    mode: '0644'
+
+
+
+- name: Ensure packages required for the Flask application
+  apt: pkg='{{ flaskapp_app_packages }}' state=present
+
+
+- name: Clone flask repo
+  git:
+    repo: "{{ flaskapp_app_repository }}"
+    dest: "{{ flaskapp_app_directory }}"
+    update: yes  
+
+
+- name: Set permissions
+  file: 
+    dest: "{{ flaskapp_app_directory }}" 
+    owner: "{{ flaskapp_app_user }}"
+    group: "{{ flaskapp_app_user }}"
+    mode: 0644
+    recurse: yes
+
+
+- name: install modules in a virtualenv
+  pip:
+    requirements: "{{ flaskapp_app_directory }}/requirements.txt"
+    virtualenv: "/home/{{ flaskapp_app_user }}/venv"
+    virtualenv_python: python3.7
+
+- name: Allow all access to tcp port 80
+  ufw:
+    rule: allow
+    port: '81'
+    proto: tcp
+  ignore_errors: yes
+
+
+- name: Create systemd file
+  template:
+    src: app_systemd.j2
+    dest: /etc/systemd/system/{{ flask_app_name }}.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: 
+    - start app
+
+- name: start app
+  systemd:
+    state: started
+    name: "{{ flask_app_name }}"
+
+- name: Check that you can get status 200 from the server
+  uri:
+    url: "http://{{ item }}:81"
+  with_items: "{{play_hosts}}"
+  tags:
+    - test
+
+
+    

@@ -1,0 +1,7 @@
+---
+- name: Playbook to run roles
+  hosts: all
+  become: yes
+
+  roles:
+    - flask-project
